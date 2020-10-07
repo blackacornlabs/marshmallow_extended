@@ -1,7 +1,7 @@
 import typing
 from marshmallow.fields import *
 from mongoengine import ValidationError as MongoValidationError, Document, QuerySet
-from mongoengine.base import DocumentMetaclass
+from mongoengine.base import TopLevelDocumentMetaclass
 
 
 __all__ = [
@@ -42,7 +42,6 @@ __all__ = [
 ]
 
 
-
 class ToInstance(Field):
     sql_db = False
     value = None
@@ -56,7 +55,7 @@ class ToInstance(Field):
     }
 
     def __init__(self,
-                 model: DocumentMetaclass,
+                 model: TopLevelDocumentMetaclass,
                  many: bool = False,
                  field: str = 'pk',
                  allow_deleted: bool = True,
@@ -130,6 +129,7 @@ class ToInstance(Field):
 
         :return: QuerySet
         """
+        values = []
         if self.value.startswith('[') and self.value.endswith(']'):
             values = self.value[2:-2].replace("'", "").split(',')
         elif isinstance(self.value, str):
@@ -169,7 +169,7 @@ class ToInstance(Field):
 
         instances = instance.all() if self.many else [instance]
 
-        fields = self.model.columns if self.sql_db else self.model._fields.keys()
+        fields = self.model.columns if self.sql_db else getattr(self.model, "_fields").keys()
         if self.return_field in fields:
             result = [getattr(doc, self.return_field) for doc in instances]
             return result if self.many else result[0]
