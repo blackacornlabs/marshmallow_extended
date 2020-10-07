@@ -1,0 +1,11 @@
+venv/
+.idea/
+/dist/
+/marshmallow_advanced.egg-info/
+build/
+
+setup.cfg
+setup.py
+
+.env
+docker-compose.yml
