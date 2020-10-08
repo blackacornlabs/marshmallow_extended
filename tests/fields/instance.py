@@ -27,7 +27,7 @@ class TestToInstance(CommonTestCase):
 
     def test_convert_to_one_instance_allow_deleted(self):
         class LoadSchemaAllowDeleted(Schema):
-            test_object = fields.Instance(TestObject)
+            test_object = fields.Instance(TestObject, allow_deleted=True)
 
         result = LoadSchemaAllowDeleted().load({"test_object": str(self.deleted_obj.id)})
         self.assertIn("test_object", result)
@@ -35,7 +35,7 @@ class TestToInstance(CommonTestCase):
 
     def test_convert_to_one_instance_check_deleted_by(self):
         class LoadSchemaCheckDeletedBy(Schema):
-            test_object = fields.Instance(TestObject, check_deleted_by='status')
+            test_object = fields.Instance(TestObject, allow_deleted=True, check_deleted_by='status')
 
         result = LoadSchemaCheckDeletedBy().load({"test_object": str(self.deleted_obj2.id)})
         self.assertIn("test_object", result)
@@ -43,12 +43,12 @@ class TestToInstance(CommonTestCase):
 
     def test_convert_to_one_instance_not_allow_deleted(self):
         class LoadSchemaNotAllowDeleted(Schema):
-            test_object = fields.Instance(TestObject, allow_deleted=False)
+            test_object = fields.Instance(TestObject)
         try:
             LoadSchemaNotAllowDeleted().load({"test_object": str(self.deleted_obj.id)})
         except ValidationError as exc:
             self.assertIn("test_object", exc.messages)
-            self.assertIn('Could not find document.', exc.messages["test_object"])
+            self.assertIn(f'Could not find document: {str(self.deleted_obj.id)}.', exc.messages["test_object"])
 
     def test_convert_to_one_instance_return_field(self):
         class LoadSchemaReturnField(Schema):
@@ -125,6 +125,17 @@ class TestToInstance(CommonTestCase):
         except ValidationError as exc:
             self.assertIn("test_objects", exc.messages)
             self.assertIn(f"Invalid identifier: '{invalid_ids}'.", exc.messages["test_objects"])
+
+    def test_convert_many_instances_not_found(self):
+        not_found_ids = [1]
+
+        class LoadSchemaNotFoundMany(Schema):
+            test_objects = fields.Instance(TestObject, many=True)
+        try:
+            LoadSchemaNotFoundMany().load({"test_objects": not_found_ids})
+        except ValidationError as exc:
+            self.assertIn("test_objects", exc.messages)
+            self.assertIn(f"Invalid identifier: '{not_found_ids}'.", exc.messages["test_objects"])
 
 
 if __name__ == '__main__':
