@@ -4,45 +4,13 @@ from mongoengine import ValidationError as MongoValidationError, Document, Query
 from mongoengine.base import TopLevelDocumentMetaclass
 
 
-__all__ = [
-    "Field",
-    "Raw",
-    "Nested",
-    "Mapping",
-    "Dict",
-    "List",
-    "Tuple",
-    "String",
-    "UUID",
-    "Number",
-    "Integer",
-    "Decimal",
-    "Boolean",
-    "Float",
-    "DateTime",
-    "NaiveDateTime",
-    "AwareDateTime",
-    "Time",
-    "Date",
-    "TimeDelta",
-    "Url",
-    "URL",
-    "Email",
-    "IP",
-    "IPv4",
-    "IPv6",
-    "Method",
-    "Function",
-    "Str",
-    "Bool",
-    "Int",
-    "Constant",
-    "Pluck",
-    "ToInstance"
-]
+__all__ = ["Field", "Raw", "Nested", "Mapping", "Dict", "List", "Tuple", "String", "UUID", "Number", "Integer",
+           "Decimal", "Boolean", "Float", "DateTime", "NaiveDateTime", "AwareDateTime", "Time", "Date", "TimeDelta",
+           "Url", "URL", "Email", "IP", "IPv4", "IPv6", "Method", "Function", "Str", "Bool", "Int", "Constant",
+           "Pluck", "Instance"]
 
 
-class ToInstance(Field):
+class Instance(Field):
     sql_db = False
     value = None
 
