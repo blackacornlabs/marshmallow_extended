@@ -1,6 +1,6 @@
 import typing
 from marshmallow.fields import *
-from mongoengine import ValidationError as MongoValidationError, Document, QuerySet
+from mongoengine import ValidationError as MongoValidationError, Document, QuerySet, InvalidQueryError
 from mongoengine.base import TopLevelDocumentMetaclass
 
 
@@ -17,9 +17,9 @@ class Instance(Field):
     #: Default error messages.
     default_error_messages = {
         "not_found_doc": "Could not find document.",
-        "not_found_field": "Field not found in model",
-        "invalid_id": "Invalid identifier",
-        "not_found_all_doc": "Not all documents were found",
+        "not_found_field": "Not found in model this field: '{field_name}'",
+        "invalid_id": "Invalid identifier: '{pk}'.",
+        "not_found_all_doc": "Not all documents were found.",
     }
 
     def __init__(self,
@@ -63,7 +63,7 @@ class Instance(Field):
         """For Schema().dump() func"""
         return None
 
-    def _deserialize(self, value, attr, data, **kwargs) -> typing.Union[Document, typing.List[Document]]:
+    def _deserialize(self, value, attr, data, **kwargs) -> typing.Union[Document, QuerySet]:
         """
         For Schema().load() func
 
@@ -85,10 +85,12 @@ class Instance(Field):
         try:
             result = self._convert_to_many() if self.many else self._query_func().first()
         except MongoValidationError:
-            self.make_error("invalid_id")
+            raise self.make_error("invalid_id", pk=value)
+        except InvalidQueryError:
+            raise self.make_error("not_found_field", field_name=self.field)
         else:
             if not result:
-                self.make_error("not_found_doc")
+                raise self.make_error("not_found_doc")
             return self._get_value(result) if self.return_field else result
 
     def _convert_to_many(self) -> QuerySet:
@@ -97,18 +99,17 @@ class Instance(Field):
 
         :return: QuerySet
         """
-        values = []
-        if self.value.startswith('[') and self.value.endswith(']'):
-            values = self.value[2:-2].replace("'", "").split(',')
-        elif isinstance(self.value, str):
-            values = self.value.split(',')
+        values = self.value
+        if isinstance(values, str):
+            values = [item.strip() for item in values.split(',')]
+        if isinstance(values, list):
+            self.value = list(set(values))
+            query = self._query_func()
+            if self.assert_every and query.count() != len(values):
+                raise self.make_error("not_found_all_doc")
+            return query.all()
         else:
-            self.make_error("invalid_id")
-        values = list(set(values))
-        query = self._query_func()
-        if self.assert_every and len(query.count()) != len(values):
-            self.make_error("not_found_all_doc")
-        return query.all()
+            raise MongoValidationError
 
     def _query_sql(self, *args, **kwargs):
         pass
@@ -125,7 +126,7 @@ class Instance(Field):
         if not self.allow_deleted:
             filter_data.update({f'{self.check_deleted_by}__ne': 'deleted'})
         # Query
-        return self.model.objects.filter(**{query_field: self.value})
+        return self.model.objects.filter(**filter_data)
 
     def _get_value(self, instance: typing.Union[Document, QuerySet]):
         """
@@ -141,4 +142,4 @@ class Instance(Field):
         if self.return_field in fields:
             result = [getattr(doc, self.return_field) for doc in instances]
             return result if self.many else result[0]
-        self.make_error("not_found_field")
+        raise self.make_error("not_found_field", field_name=self.return_field)
