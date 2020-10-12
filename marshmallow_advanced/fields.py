@@ -1,6 +1,5 @@
 import typing
 
-from marshmallow import ValidationError
 from marshmallow.fields import *
 from mongoengine import ValidationError as MongoValidationError, Document, QuerySet, InvalidQueryError, ObjectIdField
 from mongoengine.base import TopLevelDocumentMetaclass
@@ -18,10 +17,9 @@ class Instance(Field):
 
     #: Default error messages.
     default_error_messages = {
-        "not_found_one_doc": "Could not find document: {value}.",
-        "not_found_many_doc": "Could not find documents: {value}.",
+        "not_found_doc": "Could not find document.",
         "invalid_id": "Invalid identifier: '{value}'.",
-        "not_found_field": "Not found in model this field: '{field_name}.'",
+        "not_found_field": "Not found in model this field: '{field_name}'.",
         "not_found_all_doc": "Not all documents were found.",
     }
 
@@ -94,11 +92,7 @@ class Instance(Field):
             raise self.make_error("not_found_field", field_name=self.field)
         else:
             if not result:
-                if self.many:
-                    raise self.make_error("not_found_many_doc", value=value)
-                else:
-                    raise self.make_error("not_found_one_doc", value=value)
-
+                raise self.make_error("not_found_doc")
             return self._get_value(result) if self.return_field else result
 
     def _convert_to_many(self) -> typing.List[Document]:

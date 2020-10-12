@@ -48,7 +48,7 @@ class TestToInstance(CommonTestCase):
             LoadSchemaNotAllowDeleted().load({"test_object": str(self.deleted_obj.id)})
         except ValidationError as exc:
             self.assertIn("test_object", exc.messages)
-            self.assertIn(f'Could not find document: {str(self.deleted_obj.id)}.', exc.messages["test_object"])
+            self.assertIn(f'Could not find document.', exc.messages["test_object"])
 
     def test_convert_to_one_instance_return_field(self):
         class LoadSchemaReturnField(Schema):
@@ -65,7 +65,7 @@ class TestToInstance(CommonTestCase):
             LoadSchemaReturnFieldNotFound().load({"test_object": str(self.test_object.id)})
         except ValidationError as exc:
             self.assertIn("test_object", exc.messages)
-            self.assertIn("Not found in model this field: 'not_found'", exc.messages["test_object"])
+            self.assertIn("Not found in model this field: 'not_found'.", exc.messages["test_object"])
 
     def test_convert_to_one_instance_search_instance_by_field(self):
         class LoadSchemaField(Schema):
@@ -82,7 +82,7 @@ class TestToInstance(CommonTestCase):
             LoadSchemaField().load({"test_object": str(self.test_object.name)})
         except ValidationError as exc:
             self.assertIn("test_object", exc.messages)
-            self.assertIn("Not found in model this field: 'names'", exc.messages["test_object"])
+            self.assertIn("Not found in model this field: 'names'.", exc.messages["test_object"])
 
     def test_convert_to_one_instance_invalid_id(self):
         class LoadSchemaField(Schema):
