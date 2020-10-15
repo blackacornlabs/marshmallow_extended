@@ -125,7 +125,7 @@ class TestToInstance(CommonTestCase):
             self.assertIn(f"Invalid identifier: '{invalid_ids}'.", exc.messages["test_objects"])
 
     def test_convert_many_instances_not_found(self):
-        not_found_ids = [1]
+        not_found_ids = ['555555555555555555555555']
 
         class LoadSchemaNotFoundMany(Schema):
             test_objects = fields.Instance(TestObject, many=True)
@@ -133,7 +133,19 @@ class TestToInstance(CommonTestCase):
             LoadSchemaNotFoundMany().load({"test_objects": not_found_ids})
         except ValidationError as exc:
             self.assertIn("test_objects", exc.messages)
-            self.assertIn(f"Invalid identifier: '{not_found_ids}'.", exc.messages["test_objects"])
+            self.assertIn(f"Could not find document.", exc.messages["test_objects"])
+
+    def test_convert_many_instances_not_all_where_found(self):
+        not_found_ids = [str(self.test_object.id), "555555555555555555555555"]
+
+        class LoadSchemaNotAllWhereFound(Schema):
+            test_objects = fields.Instance(TestObject, many=True, assert_every=True)
+
+        try:
+            LoadSchemaNotAllWhereFound().load({"test_objects": not_found_ids})
+        except ValidationError as exc:
+            self.assertIn("test_objects", exc.messages)
+            self.assertIn(f"Not all documents were found.", exc.messages["test_objects"])
 
 
 if __name__ == '__main__':
