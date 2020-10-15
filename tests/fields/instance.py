@@ -1,7 +1,7 @@
 from unittest import main
 
 from tests.test_case import CommonTestCase
-from .model import TestObject
+from tests.model import TestObject
 from marshmallow_advanced import Schema, fields, ValidationError
 
 
