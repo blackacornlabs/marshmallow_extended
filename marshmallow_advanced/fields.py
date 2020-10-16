@@ -83,6 +83,8 @@ class Instance(Field):
             ...
             result = ClassName().load(data)     # {"attribute_name": UserInstance}
         """
+        if isinstance(value, list) and not value:
+            return value
         self.value = value
         try:
             result = self._convert_to_many() if self.many else self._query_func().first()
