@@ -147,6 +147,16 @@ class TestToInstance(CommonTestCase):
             self.assertIn("test_objects", exc.messages)
             self.assertIn(f"Not all documents were found.", exc.messages["test_objects"])
 
+    def test_convert_many_instances_assert_every_empty_list(self):
+        not_found_ids = []
+
+        class LoadSchemaAssertEveryEmptyList(Schema):
+            test_objects = fields.Instance(TestObject, many=True, assert_every=True)
+
+        result = LoadSchemaAssertEveryEmptyList().load({"test_objects": not_found_ids})
+        self.assertIn('test_objects', result)
+        self.assertEqual(result['test_objects'], [])
+
 
 if __name__ == '__main__':
     main()
