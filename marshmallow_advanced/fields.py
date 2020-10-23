@@ -109,7 +109,7 @@ class Instance(Field):
         if isinstance(values, list):
             self.value = list(set(values))
             query = self._query_func()
-            if self.assert_every and query.count() != len(values):
+            if self.assert_every and query.count() != len(self.value):
                 raise self.make_error("not_found_all_doc")
             return list(query)
         else:
