@@ -59,7 +59,7 @@ class Instance(Field):
         """For Schema().dump() func"""
         return None
 
-    def _deserialize(self, value, attr, data, **kwargs) -> typing.Union[Document, QuerySet]:
+    def _deserialize(self, value, attr, data, **kwargs) -> typing.Union[Document, typing.List[Document]]:
         """
         For Schema().load() func
 
@@ -77,7 +77,7 @@ class Instance(Field):
             ...
             result = ClassName().load(data)     # {"attribute_name": UserInstance}
         """
-        if isinstance(value, list) and not value:
+        if self.many and isinstance(value, list) and not value:
             return value
         self.value = value
         try:
