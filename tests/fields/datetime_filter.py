@@ -4,6 +4,8 @@ from marshmallow import fields, ValidationError, Schema
 class DatetimeFilter(fields.DateTime):
     """Field to filtering by __gte and __lte for mongoDB or __ge and __le for SQLAlchemy"""
 
+    ValidateSuffixError = ValidationError(message={'errors': 'suffix must be _from or _until only'})
+
     def __init__(self, db_type, *args, **kwargs):
         if db_type not in ['sql', 'no_sql']:
             raise ValidationError(message={'errors': 'db_type must be sql or no_sql only'})
