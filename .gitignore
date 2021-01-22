@@ -1,7 +1,7 @@
 venv/
 .idea/
 /dist/
-/marshmallow_advanced.egg-info/
+/marshmallow_extended.egg-info/
 build/
 
 setup.cfg
