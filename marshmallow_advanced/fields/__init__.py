@@ -7,3 +7,5 @@ __all__ = ["Field", "Raw", "Nested", "Mapping", "Dict", "List", "Tuple", "String
            "Decimal", "Boolean", "Float", "DateTime", "NaiveDateTime", "AwareDateTime", "Time", "Date", "TimeDelta",
            "Url", "URL", "Email", "IP", "IPv4", "IPv6", "Method", "Function", "Str", "Bool", "Int", "Constant",
            "Pluck", "Instance", "Active"]
+
+__version__ = "1.2.2"
