@@ -68,7 +68,7 @@ class Active(fields.Field):
             OneOf(self.filter_map.keys())(value)
             if not (result_filter := self.filter_map[value]):
                 return missing_
-            self.attribute, result = result_filter.popitem()
+            [[self.attribute, result]] = result_filter.items()
             return result
 
         OneOf((True, False))(value)
