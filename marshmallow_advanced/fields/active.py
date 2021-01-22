@@ -1,7 +1,7 @@
 import typing
 from collections import Iterable
 
-from marshmallow import fields, Schema
+from marshmallow import fields
 from marshmallow.fields import missing_
 from marshmallow.validate import OneOf
 
