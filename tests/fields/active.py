@@ -1,7 +1,7 @@
 from unittest import main, TestCase
 
-from marshmallow_advanced import Schema
-from marshmallow_advanced.fields import Active
+from marshmallow_extended import Schema
+from marshmallow_extended.fields import Active
 
 
 class ActiveFieldTests(TestCase):

@@ -9,8 +9,8 @@ HERE = pathlib.Path(__file__).parent
 README = (HERE / "README.md").read_text()
 
 setup(name='marshmallow_extended',
-      version='1.2.2',
-      url='https://github.com/blackacornlabs/marshmallow_advanced',
+      version='1.2.4',
+      url='https://github.com/blackacornlabs/marshmallow_extended',
       long_description=README,
       description='Extended Marshmallow library',
       long_description_content_type="text/markdown",

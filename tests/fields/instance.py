@@ -2,7 +2,7 @@ from unittest import main
 
 from tests.test_case import CommonTestCase
 from tests.model import TestObject
-from marshmallow_advanced import Schema, fields, ValidationError
+from marshmallow_extended import Schema, fields, ValidationError
 
 
 class TestToInstance(CommonTestCase):
