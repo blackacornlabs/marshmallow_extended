@@ -1,11 +1,11 @@
 import typing
 
-from marshmallow.fields import Field
+from .abstract_instance import AbstractInstance
 from mongoengine import ValidationError as MongoValidationError, Document, QuerySet, InvalidQueryError, ObjectIdField
 from mongoengine.base import TopLevelDocumentMetaclass
 
 
-class Instance(Field):
+class MongonengineInstance(AbstractInstance):
     sql_db = False
     value = None
 
