@@ -3,7 +3,7 @@ from .abstract_instance import AbstractInstance
 
 class Instance:
 
-    instance_strategy: AbstractInstance
+    strategy: AbstractInstance
 
     def __init__(self,
                  model,
@@ -47,6 +47,11 @@ class Instance:
                 assert_every=assert_every,
                 return_field=return_field,
                 **kwargs)
+
+    def __getattribute__(self, item):
+        if item in ['strategy', 'is_sqlalchemy_model', 'set_strategy', '_serialize', '_deserialize']:
+            return super(Instance, self).__getattribute__(item)
+        return self.strategy.__getattribute__(item)
 
     @staticmethod
     def is_sqlalchemy_model(model):
