@@ -8,24 +8,29 @@ class Instance:
     def __init__(self,
                  model,
                  many: bool = False,
-                 field: str = 'pk',
+                 field: str = None,
                  allow_deleted: bool = False,
                  check_deleted_by: str = 'state',
                  assert_every: bool = False,
                  return_field: str = None, **kwargs):
         """
-        Initialization class
+        Strategy pattern class for Mongoengine instance or SQLAlchemy mixins instance
 
         :param model: Model
-        :param field: Found instances by this field.
-        :param allow_deleted Allowed return deleted instances flag
-        :param check_deleted_by Filed, by check deleted instances. (If allow_deleted=False)
+        :param field: Search field (pk for mongoengine, id for sqlalchemy_mixins).
+        :param allow_deleted Allow returning deleted instances.
+        :type allow_deleted: bool
+        :param check_deleted_by Filed, by check deleted instances (for allow_deleted=False only).
         :param return_field: Return value field in this instance
-        :param many: Many instances. True/False
-        :param assert_every: True/False. Raise exception if not found one instances. (Only many=True)
+        :param many: Many instances.
+        :type many: bool
+        :param assert_every: Raise exception if any instance is not found (for many=True only).
+        :type assert_every: bool
         :param kwargs:
         """
         if self.is_sqlalchemy_model(model):
+            if field is None:
+                field = 'id'
             from .sqlalchemy_mixins_instance import SQLAlchemyMixinsInstance
             self.strategy = SQLAlchemyMixinsInstance(
                 model=model,
@@ -37,6 +42,8 @@ class Instance:
                 return_field=return_field,
                 **kwargs)
         else:
+            if field is None:
+                field = 'pk'
             from .mongoengine_instance import MongonengineInstance
             self.strategy = MongonengineInstance(
                 model=model,

@@ -11,10 +11,10 @@ class MongonengineInstance(AbstractInstance):
 
     #: Default error messages.
     default_error_messages = {
-        "not_found_doc": "Could not find document.",
+        "doc_not_found": "Could not find document.",
         "invalid_id": "Invalid identifier: '{value}'.",
-        "not_found_field": "Not found in model this field: '{field_name}'.",
-        "not_found_all_doc": "Not all documents were found.",
+        "field_not_found": "Not found in model this field: '{field_name}'.",
+        "some_docs_not_found": "Not all documents were found.",
     }
 
     def __init__(self,
@@ -26,15 +26,18 @@ class MongonengineInstance(AbstractInstance):
                  assert_every: bool = False,
                  return_field: str = None, **kwargs):
         """
-        Initialisation class
+        Initialization class
 
         :param model: Model
-        :param field: Found instances by this field.
-        :param allow_deleted Allowed return deleted instances flag
-        :param check_deleted_by Filed, by check deleted instances. (If allow_deleted=False)
+        :param field: Search field (pk for mongoengine, id for sqlalchemy_mixins).
+        :param allow_deleted Allow returning deleted instances.
+        :type allow_deleted: bool
+        :param check_deleted_by Filed, by check deleted instances (for allow_deleted=False only).
         :param return_field: Return value field in this instance
-        :param many: Many instances. True/False
-        :param assert_every: True/False. Raise exception if not found one instances. (Only many=True)
+        :param many: Many instances.
+        :type many: bool
+        :param assert_every: Raise exception if any instance is not found (for many=True only).
+        :type assert_every: bool
         :param kwargs:
         """
         super().__init__(**kwargs)
@@ -85,10 +88,10 @@ class MongonengineInstance(AbstractInstance):
         except MongoValidationError as exc:
             raise self.make_error("invalid_id", value=value)
         except InvalidQueryError:
-            raise self.make_error("not_found_field", field_name=self.field)
+            raise self.make_error("field_not_found", field_name=self.field)
         else:
             if not result:
-                raise self.make_error("not_found_doc")
+                raise self.make_error("doc_not_found")
             return self._get_value(result) if self.return_field else result
 
     def _convert_to_many(self) -> typing.List[Document]:
@@ -104,7 +107,7 @@ class MongonengineInstance(AbstractInstance):
             self.value = list(set(values))
             query = self._query_func()
             if self.assert_every and query.count() != len(self.value):
-                raise self.make_error("not_found_all_doc")
+                raise self.make_error("some_docs_not_found")
             return list(query)
         else:
             raise MongoValidationError
@@ -140,4 +143,4 @@ class MongonengineInstance(AbstractInstance):
         if self.return_field in fields:
             result = [getattr(doc, self.return_field) for doc in instances]
             return result if self.many else result[0]
-        raise self.make_error("not_found_field", field_name=self.return_field)
+        raise self.make_error("field_not_found", field_name=self.return_field)
