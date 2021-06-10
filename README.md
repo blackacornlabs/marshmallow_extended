@@ -7,6 +7,9 @@
 Converts `active` field to `state` and back.
 
 ```python
+>>> from marshmallow_extended import Schema
+>>> from marshmallow_extended.fields import Active
+
 >>> class SimpleSchema(Schema):
         active = Active()
 
@@ -37,3 +40,24 @@ Filter by query parameter:
 
 For experienced usage try `positives`, `negatives`, `positive_filter`, 
 `negative_filter`, `missing_filter` parameters. You can see behaviour for this parameters in tests.  
+
+### Email field
+
+Extended `marshmallow.field.Email` field: lowering case.
+
+```python
+>>> from marshmallow_extended import Schema
+>>> from marshmallow_extended.fields import Email
+
+>>> class SimpleSchema(Schema):
+        email = Email()
+
+SimpleSchema().load({'email': 'Test@email.com'})
+{'email': 'test@email.com'}
+```
+
+## Changelog
+
+### 1.3.0 (2021-06-10)
+
+- Added `Email` field.
