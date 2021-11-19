@@ -1,3 +1,5 @@
-from marshmallow import validate, Schema, post_dump, post_load, pre_dump, pre_load, ValidationError
+from marshmallow import validate, Schema, post_dump, post_load, pre_dump, pre_load, ValidationError, decorators
 
-__version__ = "1.3.0"
+__all__ = ['validate', 'Schema', 'post_dump', 'post_load', 'pre_dump', 'pre_load', 'ValidationError', 'decorators']
+
+__version__ = "1.3.2"

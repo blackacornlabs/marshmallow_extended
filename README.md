@@ -58,6 +58,11 @@ SimpleSchema().load({'email': 'Test@email.com'})
 
 ## Changelog
 
+### 1.3.1 (2021-06-10)
+
+- Added `Enum` and `IContains` fields.
+- Added `get_params` and `apply_endpoint_params` decorators.
+
 ### 1.3.0 (2021-06-10)
 
 - Added `Email` field.
