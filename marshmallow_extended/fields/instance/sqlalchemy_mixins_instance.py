@@ -14,11 +14,9 @@ class SQLAlchemyMixinsInstance(AbstractInstance):
 
     def __init__(self,
                  model,
-                 many: bool = False,
                  field: str = 'pk',
                  allow_deleted: bool = False,
                  check_deleted_by: str = 'state',
-                 assert_every: bool = False,
                  return_field: str = None, **kwargs):
         """
         Initialization class
@@ -29,10 +27,6 @@ class SQLAlchemyMixinsInstance(AbstractInstance):
         :type allow_deleted: bool
         :param check_deleted_by Filed, by check deleted instances (for allow_deleted=False only).
         :param return_field: Return value field in this instance
-        :param many: Many instances.
-        :type many: bool
-        :param assert_every: Raise exception if any instance is not found (for many=True only).
-        :type assert_every: bool
         :param kwargs:
         """
         super().__init__(**kwargs)
@@ -41,6 +35,7 @@ class SQLAlchemyMixinsInstance(AbstractInstance):
         self.field = field
         self.allow_deleted = allow_deleted
         self.check_deleted_by = check_deleted_by
+        self.return_field = return_field
 
     def _serialize(self, value, attr, obj, **kwargs) -> typing.Optional[str]:
         """For Schema().dump() func"""
@@ -72,7 +67,7 @@ class SQLAlchemyMixinsInstance(AbstractInstance):
         else:
             if not result:
                 raise self.make_error("row_not_found", field_name=self.field)
-        return result
+        return getattr(result, self.return_field) if self.return_field else result
 
     def _query(self):
         """
