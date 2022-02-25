@@ -11,7 +11,7 @@ Converts `active` field to `state` and back.
 >>> from marshmallow_extended.fields import Active
 
 >>> class SimpleSchema(Schema):
-        active = Active()
+...     active = Active()
 
 >>> SimpleSchema().dump({'state': 'active'})
 {'active': True})
@@ -28,7 +28,7 @@ Filter by query parameter:
 
 ```python
 >>> class SimpleFilterSchema(Schema):
-        active = Active(as_filter=True)
+...     active = Active(as_filter=True)
 
 >>> SimpleFilterSchema().load({'active': 'true'})
 {'state': 'active'}
@@ -50,13 +50,43 @@ Extended `marshmallow.field.Email` field: lowering case.
 >>> from marshmallow_extended.fields import Email
 
 >>> class SimpleSchema(Schema):
-        email = Email()
+...     email = Email()
 
-SimpleSchema().load({'email': 'Test@email.com'})
+>>> SimpleSchema().load({'email': 'Test@email.com'})
 {'email': 'test@email.com'}
 ```
 
+### Instance field
+
+Marshmallow field allowing to convert field to an ORM instance.
+
+```python
+>>> from marshmallow_extended import Schema
+>>> from marshmallow_extended.fields import Instance
+>>> from app.models import Restaurant
+
+>>> class SimpleSchema(Schema):
+...     restaurant = Instance(Restaurant)
+
+>>> SimpleSchema().load({'restaurant': 1})
+{'restaurant': <Restaurant 1>}
+```
+
+To return certain field of instance use `return_field` argument:
+
+```python
+>>> class SimpleSchema(Schema):
+...     restaurant = Instance(Restaurant, return_field='name')
+
+>>> SimpleSchema().load({'restaurant': 1})
+{'restaurant': 'First restaurant'}
+```
+
 ## Changelog
+
+### 1.3.1 (2022-02-25)
+
+- Added `return_field` argument to `Instance` marshmallow field (to SQL implementation).
 
 ### 1.3.1 (2021-06-10)
 
